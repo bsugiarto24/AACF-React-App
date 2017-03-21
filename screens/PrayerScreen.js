@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 
 
 
-export default class LinksScreen extends React.Component {
+export default class PrayerScreen extends React.Component {
 
   constructor(props) {
     super(props);
