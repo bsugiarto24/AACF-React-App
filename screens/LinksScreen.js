@@ -111,7 +111,7 @@ export default class LinksScreen extends React.Component {
           
 
           <Prompt
-            title="{Prayer Request}"
+            title="Prayer Request"
             placeholder="Start typing"
             defaultValue="Hello"
             visible={ this.state.promptVisible }
@@ -127,9 +127,6 @@ export default class LinksScreen extends React.Component {
               })
             }/>
 
-
-
-
           <ListView
           dataSource={this.state.dataSource}
           renderRow={this._renderItem.bind(this)}
@@ -144,41 +141,13 @@ export default class LinksScreen extends React.Component {
   }
 
    _addItem() {
-    {/*AlertIOS.prompt(
-      'Add New Item',
-      null,
-      [
-        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        {
-          text: 'Add',
-          onPress: (text) => {
-            this.itemsRef.push({text})
-          }
-        },
-      ],
-      'plain-text'
-    );*/}
-
-    this.setState({
-              promptVisible: true,
-              message: "addd"
-            });
+      this.setState({
+        promptVisible: true,
+        message: "addd"
+      });
   }
 
   _renderItem(item) {
-
-    {/*const onPress = () => {
-      AlertIOS.alert(
-        'Complete',
-        null,
-        [
-          {text: 'Complete', onPress: (text) => this.itemsRef.child(item._key).remove()},
-          {text: 'Cancel', onPress: (text) => console.log('Cancelled')}
-        ]
-      );
-    };*/}
-
-
     const onPress = () => {
         this.itemsRef.child(item._key).remove()
     };

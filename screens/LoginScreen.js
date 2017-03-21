@@ -26,7 +26,7 @@ export default class LogInScreen extends React.Component {
   }
   async logIn() {
 
-    const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync('719461758217610', {
+    const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync('1534983139847058', {
       permissions: ['public_profile', 'email', 'user_friends'],
     });
 

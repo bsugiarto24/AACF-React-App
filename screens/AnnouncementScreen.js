@@ -159,18 +159,13 @@ export default class AnnouncementScreen extends React.Component {
   }
 
    _addItem() {
-   
-
-    this.setState({
-              promptVisible: true,
-              message: "addd"
-            });
+      this.setState({
+        promptVisible: true,
+        message: "addd"
+      });
   }
 
   _renderItem(item) {
-
-
-
     const onPress = () => {
         this.itemsRef.child(item._key).remove()
     };

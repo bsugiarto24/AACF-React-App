@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
+import Exponent from 'exponent';
 import {
   Image,
   Linking,
@@ -8,25 +9,11 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
+  AsyncStorage
 } from 'react-native';
 
 import { MonoText } from '../components/StyledText';
-import { AppRegistry } from 'react-native';
-import { Provider } from 'react-redux';
-import * as firebase from 'firebase';
-import App from '../containers/App';
-import configureStore from '../store/configureStore'
-
-const store = configureStore();
-{/*const firebaseConfig = {
-    apiKey: "AIzaSyDxe3Adw94y0kEaoyUckhJRPYV8kaHLQ8o",
-    authDomain: "aacf2-dc0b9.firebaseapp.com",
-    databaseURL: "https://aacf2-dc0b9.firebaseio.com",
-    storageBucket: "aacf2-dc0b9.appspot.com",
-    messagingSenderId: "874313332955"
-};
-
-firebase.initializeApp(firebaseConfig);*/}
 
 export default class HomeScreen extends React.Component {
   static route = {
@@ -34,119 +21,63 @@ export default class HomeScreen extends React.Component {
       visible: false,
     },
   }
+  constructor(props) {
+    super(props)
+  }
+  async logIn() {
 
+    const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync('1534983139847058', {
+      permissions: ['public_profile'],
+    });
+
+    if (type === 'success') {
+      // Get the user's name using Facebook's Graph API
+      const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
+      const responseJSON = JSON.stringify(await response.json());
+
+     // await AsyncStorage.setItem('@EmployeeHelp:user', responseJSON);
+     //  this.props.rerender(responseJSON);
+      }
+//       try {
+//     const value = await AsyncStorage.getItem('@EmployeeHelp:user');
+//         if (value !== null){
+//     // We have data!!
+//         Alert.alert('Logged in!',
+//           `Hi ${value}!`);
+//   }
+// } catch (error) {
+//   // Error retrieving data
+// }
+  }
+
+  logMeIn() {
+    this.logIn().then(user => {
+      Alert.alert('props!',
+        `Hi ${this.props}!`,
+        `User: ${user}`);
+      this.props.rerender(user);
+    })
+  }
 
   render() {
-
-    {/*firebase.database().ref('users').set({
-      highscore: 'asdf'
-    });*/}
-
-    var highscore = 0;
-
-    {/*var ref = firebase.database().ref("users");
-    ref.orderByKey().on("child_added", function(snapshot) {
-       highscore = snapshot.key;
-    });*/}
-
     return (
       <View style={styles.container}>
-
-         {/* Scroll View for home screen  */}
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}>
-
           <View style={styles.welcomeContainer}>
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-              {highscore}
-            </Text>
             <Image
-              source={require('../assets/images/exponent-wordmark.png')}
+              source={require('../assets/images/exponent-icon@3x.png')}
               style={styles.welcomeImage}
             />
-
-          </View>
-
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>
-              Get started by opening
-            </Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>
-                screens/HomeScreen.js
-              </MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
-          </View>
-
-          
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>
-                Help, it didn’t automatically reload!
+          <TouchableOpacity onPress={this.logIn.bind(this)}>
+              <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
+                Sign in with Facebook
               </Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
           </View>
-        </ScrollView>
-
-
-
-        {/* Tabs Portion  */}
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>
-            This is a tab bar. You can edit it in:
-          </Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>
-              navigation/RootNavigation.js
-            </MonoText>
-          </View>
-        </View>
-      </View>
+    </View>
     );
   }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will run slightly slower but
-          you have accesss to useful development tools. {learnMoreButton}.
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    Linking.openURL('https://docs.getexponent.com/versions/latest/guides/development-mode');
-  }
-
-  _handleHelpPress = () => {
-    Linking.openURL('https://docs.getexponent.com/versions/latest/guides/up-and-running.html#can-t-see-your-changes');
-  }
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -164,12 +95,12 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 2,
     marginBottom: 20,
   },
   welcomeImage: {
     width: 200,
-    height: 34.5,
+    //height: 34.5,
     marginTop: 3,
   },
   getStartedContainer: {
@@ -233,3 +164,5 @@ const styles = StyleSheet.create({
     color: '#2e78b7',
   },
 });
+
+
