@@ -162,7 +162,9 @@ export default class AnnouncementScreen extends React.Component {
 
   _renderItem(item) {
     const onPress = () => {
-        this.itemsRef.child(item._key).remove()
+
+        if(global.username == 'Bryan Sugiarto')
+          this.itemsRef.child(item._key).remove()
     };
 
     return (

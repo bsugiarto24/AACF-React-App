@@ -20,8 +20,6 @@ import renderIf from './renderIf';
 global.username = 'anonymous';
 export default class HomeScreen extends React.Component {
 
-  
-
   static route = {
     navigationBar: {
       visible: false,
@@ -57,6 +55,24 @@ export default class HomeScreen extends React.Component {
     }
   }
 
+  async logout() {
+    const { type, token } = await Exponent.Facebook.logOutAsync('1534983139847058');
+
+    if (type === 'success') {
+      const response = await fetch(
+        `https://graph.facebook.com/me?access_token=${token}`);
+      
+      global.username = 'anonymous';
+
+      Alert.alert(
+        'Logged Out!',
+        `Successful log out`,
+      );
+
+      this.forceUpdate();
+    }
+  }
+
 
   render() {
     return (
@@ -72,6 +88,13 @@ export default class HomeScreen extends React.Component {
             <TouchableOpacity onPress={this.logIn.bind(this)}>
               <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
                 Sign in with Facebook
+              </Text>
+            </TouchableOpacity>
+          )}
+          {renderIf(global.username != 'anonymous', 
+            <TouchableOpacity onPress={this.logout.bind(this)}>
+              <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
+                Sign out
               </Text>
             </TouchableOpacity>
           )}
