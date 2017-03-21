@@ -44,6 +44,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+import renderIf from './renderIf';
+
 
 export default class AnnouncementScreen extends React.Component {
 
@@ -110,23 +112,14 @@ export default class AnnouncementScreen extends React.Component {
 
   render() {
 
-    var highscore = -1;
 
-    var ref = firebase.database().ref("users");
-    ref.orderByKey().on("child_added", function(snapshot) {
-       highscore = snapshot.key;
-    });
-
-
-     <StatusBar title="Grocery List"/>
-
-
+     <StatusBar title="Annoucements"/>
         return (
           <View style={styles.container}>
           <Prompt
-            title="Say something!"
+            title="Create Annoucement!"
             placeholder="Start typing"
-            defaultValue="Hello"
+            defaultValue="Hello AACF, "
             visible={ this.state.promptVisible }
             onCancel={ () => this.setState({
               promptVisible: false,
@@ -150,7 +143,9 @@ export default class AnnouncementScreen extends React.Component {
           renderRow={this._renderItem.bind(this)}
           enableEmptySections={true}/>
 
-          <ActionButton onPress={this._addItem.bind(this)} title="Add" />
+          {renderIf(global.username == 'Bryan Sugiarto', 
+                    <ActionButton onPress={this._addItem.bind(this)} title="Add" />
+          )}
 
           </View>
         );

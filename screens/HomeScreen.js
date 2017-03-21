@@ -14,8 +14,14 @@ import {
 } from 'react-native';
 
 import { MonoText } from '../components/StyledText';
+import renderIf from './renderIf';
 
+
+global.username = 'anonymous';
 export default class HomeScreen extends React.Component {
+
+  
+
   static route = {
     navigationBar: {
       visible: false,
@@ -24,40 +30,33 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props)
   }
-  async logIn() {
 
+
+  async logIn() {
     const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync('1534983139847058', {
       permissions: ['public_profile'],
     });
 
     if (type === 'success') {
       // Get the user's name using Facebook's Graph API
-      const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
-      const responseJSON = JSON.stringify(await response.json());
+      //const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
+      //const responseJSON = JSON.stringify(await response.json());
 
-     // await AsyncStorage.setItem('@EmployeeHelp:user', responseJSON);
-     //  this.props.rerender(responseJSON);
-      }
-//       try {
-//     const value = await AsyncStorage.getItem('@EmployeeHelp:user');
-//         if (value !== null){
-//     // We have data!!
-//         Alert.alert('Logged in!',
-//           `Hi ${value}!`);
-//   }
-// } catch (error) {
-//   // Error retrieving data
-// }
+      // Get the user's name using Facebook's Graph API
+      const response = await fetch(
+        `https://graph.facebook.com/me?access_token=${token}`);
+      
+      global.username = (await response.json()).name;
+
+      Alert.alert(
+        'Logged in!',
+        `Hi ${global.username}!`,
+      );
+
+      this.forceUpdate();
+    }
   }
 
-  logMeIn() {
-    this.logIn().then(user => {
-      Alert.alert('props!',
-        `Hi ${this.props}!`,
-        `User: ${user}`);
-      this.props.rerender(user);
-    })
-  }
 
   render() {
     return (
@@ -67,11 +66,15 @@ export default class HomeScreen extends React.Component {
               source={require('../assets/images/exponent-icon@3x.png')}
               style={styles.welcomeImage}
             />
-          <TouchableOpacity onPress={this.logIn.bind(this)}>
+
+
+          {renderIf(global.username == 'anonymous', 
+            <TouchableOpacity onPress={this.logIn.bind(this)}>
               <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
                 Sign in with Facebook
               </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          )}
           </View>
     </View>
     );
@@ -91,16 +94,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 80,
+    paddingTop: 50,
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 2,
+    marginTop: 200,
     marginBottom: 20,
+    height: 200,
   },
   welcomeImage: {
-    width: 200,
-    //height: 34.5,
+    width: 250,
+    height: 200,
     marginTop: 3,
   },
   getStartedContainer: {

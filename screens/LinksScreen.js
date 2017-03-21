@@ -47,7 +47,7 @@ export default class LinksScreen extends React.Component {
   }
 
   getRef() {
-    return firebase.ref();
+    return firebase.ref().child("prayer");
   }
 
   listenForItems() {
@@ -58,8 +58,13 @@ export default class LinksScreen extends React.Component {
       
       snap.forEach((child) => {
 
+        var pname = 'anonymous';
+        if(child.val().name != null){
+          pname = child.val().name;
+        }
+
         items.push({
-            title: child.val().text,
+            title: child.val().text + " by " + pname,
             _key: child.key
         });
       });
@@ -96,24 +101,15 @@ export default class LinksScreen extends React.Component {
 
   render() {
 
-    var highscore = -1;
-
-    var ref = firebase.database().ref("users");
-    ref.orderByKey().on("child_added", function(snapshot) {
-       highscore = snapshot.key;
-    });
-
-
-     <StatusBar title="Grocery List"/>
+     <StatusBar title="Prayer Requests"/>
 
         return (
           <View style={styles.container}>
           
-
           <Prompt
             title="Prayer Request"
             placeholder="Start typing"
-            defaultValue="Hello"
+            defaultValue="Pray for "
             visible={ this.state.promptVisible }
             onCancel={ () => this.setState({
               promptVisible: false,
@@ -123,9 +119,11 @@ export default class LinksScreen extends React.Component {
               (value) => this.setState({
                 promptVisible: false,
                 message: `You said "${value}"`,
-                onPress: this.itemsRef.push({text: value})
+                onPress: this.itemsRef.push({text: value,
+                  name: global.username})
               })
             }/>
+
 
           <ListView
           dataSource={this.state.dataSource}
@@ -137,7 +135,6 @@ export default class LinksScreen extends React.Component {
           </View>
         );
       
-
   }
 
    _addItem() {
