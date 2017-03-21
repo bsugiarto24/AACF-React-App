@@ -4,8 +4,13 @@ import {
   View,
   Text,
   ListView,
-  AlertIOS
+  AlertIOS,
+  AppRegistry
 } from 'react-native';
+
+{/*import {
+  Button, CheckBox
+} from 'react-native-elements';*/}
 
 import {
   ExponentLinksView,
@@ -45,7 +50,7 @@ export default class AnnouncementScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.itemsRef = firebase.database().ref();
+    this.itemsRef = firebase.database().ref().child("announce");
     this.state = {
         searchString: '',
         isLoading: false,
@@ -60,7 +65,7 @@ export default class AnnouncementScreen extends React.Component {
   }
 
   listenForItems() {
-    firebase.database().ref().on('value', (snap) => {
+    firebase.database().ref().child("announce").on('value', (snap) => {
 
       // get children as an array
       var items = [];
@@ -115,10 +120,11 @@ export default class AnnouncementScreen extends React.Component {
 
      <StatusBar title="Grocery List"/>
 
+
         return (
           <View style={styles.container}>
           <Prompt
-            title="Say something"
+            title="Say something!"
             placeholder="Start typing"
             defaultValue="Hello"
             visible={ this.state.promptVisible }
@@ -134,6 +140,11 @@ export default class AnnouncementScreen extends React.Component {
               })
             }/>
 
+         {/*<Button
+           raised
+           icon={{name: 'cached'}}
+           title='RAISED WITH ICON' />*/}
+
           <ListView
           dataSource={this.state.dataSource}
           renderRow={this._renderItem.bind(this)}
@@ -148,20 +159,7 @@ export default class AnnouncementScreen extends React.Component {
   }
 
    _addItem() {
-    {/*AlertIOS.prompt(
-      'Add New Item',
-      null,
-      [
-        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        {
-          text: 'Add',
-          onPress: (text) => {
-            this.itemsRef.push({text})
-          }
-        },
-      ],
-      'plain-text'
-    );*/}
+   
 
     this.setState({
               promptVisible: true,
@@ -171,16 +169,6 @@ export default class AnnouncementScreen extends React.Component {
 
   _renderItem(item) {
 
-    {/*const onPress = () => {
-      AlertIOS.alert(
-        'Complete',
-        null,
-        [
-          {text: 'Complete', onPress: (text) => this.itemsRef.child(item._key).remove()},
-          {text: 'Cancel', onPress: (text) => console.log('Cancelled')}
-        ]
-      );
-    };*/}
 
 
     const onPress = () => {
