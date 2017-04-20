@@ -41,7 +41,6 @@ export default class RootNavigation extends React.Component {
           <StackNavigation initialRoute="home" />
         </TabNavigationItem>
 
-
         {/* Announcements */}
         <TabNavigationItem
           id="announcements"
@@ -49,14 +48,12 @@ export default class RootNavigation extends React.Component {
           <StackNavigation initialRoute="announcements" />
         </TabNavigationItem>
 
-
         {/* Prayer */}
         <TabNavigationItem
           id="links"
           renderIcon={isSelected => this._renderIcon('signing', isSelected)}>
           <StackNavigation initialRoute="links" />
         </TabNavigationItem>
-
 
         {/* MOI */}
         <TabNavigationItem

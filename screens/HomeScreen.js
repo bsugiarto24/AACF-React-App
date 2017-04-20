@@ -18,6 +18,8 @@ import renderIf from './renderIf';
 
 
 global.username = 'anonymous';
+global.picture = '';
+
 export default class HomeScreen extends React.Component {
 
   static route = {
@@ -45,6 +47,7 @@ export default class HomeScreen extends React.Component {
         `https://graph.facebook.com/me?access_token=${token}`);
       
       global.username = (await response.json()).name;
+      {/*global.picture = (await response.json()).picture;*/}
 
       Alert.alert(
         'Logged in!',
@@ -52,15 +55,12 @@ export default class HomeScreen extends React.Component {
       );
 
       this.forceUpdate();
+
     }
   }
 
   async logout() {
-    const { type, token } = await Exponent.Facebook.logOutAsync('1534983139847058');
-
-    if (type === 'success') {
-      const response = await fetch(
-        `https://graph.facebook.com/me?access_token=${token}`);
+      
       
       global.username = 'anonymous';
 
@@ -70,18 +70,34 @@ export default class HomeScreen extends React.Component {
       );
 
       this.forceUpdate();
-    }
+    
   }
 
 
   render() {
     return (
       <View style={styles.container}>
+
+
+        <Text>
+          {global.picture}
+        </Text> 
+
+
           <View style={styles.welcomeContainer}>
             <Image
               source={require('../assets/images/exponent-icon@3x.png')}
               style={styles.welcomeImage}
             />
+
+          {renderIf(global.picture.length != 0, 
+            <TouchableOpacity onPress={this.logIn.bind(this)}>
+              <Image
+                style={{width: 50, height: 50}}
+                source={{uri: global.picture }}
+              />
+            </TouchableOpacity>
+          )}
 
 
           {renderIf(global.username == 'anonymous', 
