@@ -4,7 +4,7 @@ import {
   View,
   Text,
   ListView,
-  AlertIOS,
+  Alert,
   AppRegistry
 } from 'react-native';
 
@@ -65,15 +65,10 @@ export default class AnnouncementScreen extends React.Component {
     firebase.database().ref().child("admins").on('value', (snap) => {
       global.admins = [];
       snap.forEach((child) => {
-        global.admins.push(child.val());
-        console.log(child.val());
+        global.admins.push("" + child.val());
       });
     });
 
-  }
-
-  getRef() {
-    return firebase.ref();
   }
 
   listenForItems() {
@@ -88,7 +83,6 @@ export default class AnnouncementScreen extends React.Component {
             url: child.val().url,
         });
       });
-
       this.setState({
         dataSource: ds.cloneWithRows(items)
       });
@@ -106,38 +100,38 @@ export default class AnnouncementScreen extends React.Component {
     },
   }
 
-
   render() {
-        return (
-          <View style={styles.container}>
-          <Prompt
-            title="Create Annoucement!"
-            placeholder="Start typing"
-            defaultValue="Hello AACF, "
-            visible={ this.state.promptVisible }
-            onCancel={ () => this.setState({
-              promptVisible: false,
-              message: "You cancelled"
-            }) }
-            onSubmit={ 
-              (value) => this.setState({
-                promptVisible: false,
-                message: `You said "${value}"`,
-                onPress: this.itemsRef.push({text: value})
-              })
-            }/>
+    return (
+      <View style={styles.container}>
+      <Prompt
+        title="Create Annoucement Format: <announcement>*<picture url>"
+        defaultValue="Hello AACF, "
+        visible={ this.state.promptVisible }
+        onCancel={ () => this.setState({
+          promptVisible: false,
+          message: "You cancelled"
+        }) }
+        onSubmit={ 
+          (value) => this.setState({
+            promptVisible: false,
+            message: `You said "${value}"`,
+            onPress: this.itemsRef.push({
+              text: value.substring(0,value.indexOf('*')),
+              url: value.substring(value.indexOf('*') + 1)
+            })
+          })
+        }/>
 
-          <ListView
-            dataSource={this.state.dataSource}
-            renderRow={this._renderItem.bind(this)}
-            enableEmptySections={true}/>
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this._renderItem.bind(this)}
+        enableEmptySections={true}/>
 
-          {renderIf(global.admins.includes(global.id), 
-            <ActionButton onPress={this._addItem.bind(this)} title="Add" />
-          )}
-          </View>
-        );
-      
+      {renderIf(global.admins.includes(global.id), 
+        <ActionButton onPress={this._addItem.bind(this)} title="Add" />
+      )}
+      </View>
+    );
   }
 
    _addItem() {
@@ -150,7 +144,15 @@ export default class AnnouncementScreen extends React.Component {
   _renderItem(item) {
     const onPress = () => {
     if(global.admins.includes(global.id))
-      this.itemsRef.child(item._key).remove()
+      Alert.alert(
+      'Delete',
+      'Are you sure you want to delete this announcement?',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'},
+        {text: 'OK', onPress: () => this.itemsRef.child(item._key).remove()},
+      ],
+      { cancelable: false }
+      );
     };
 
     return (

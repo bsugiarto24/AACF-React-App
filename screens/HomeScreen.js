@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   View,
   Alert,
-  AsyncStorage
+  AsyncStorage,
+  Dimensions,
 } from 'react-native';
 
 import { MonoText } from '../components/StyledText';
@@ -20,7 +21,8 @@ import renderIf from './renderIf';
 global.username = 'anonymous';
 global.picture = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.empty = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
-global.id = 'sdfs';
+global.id = '';
+const window = Dimensions.get('window');
 
 export default class HomeScreen extends React.Component {
 
@@ -30,7 +32,7 @@ export default class HomeScreen extends React.Component {
     },
   }
   constructor(props) {
-    super(props)
+    super(props);
   }
 
 
@@ -75,44 +77,46 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
 
-
-          <Text>{global.id}</Text>
-
           <View style={styles.welcomeContainer}>
-           {/*} <Image
-              source={require('../assets/images/exponent-icon@3x.png')}
-              style={styles.welcomeImage}
-            /> */}
-
-        
-            
-              {/* PROFILE IMAGE */}
-              <Image
-                style={{width: 150, 
-                        height: 150,
-                        marginBottom: 10,
+            <Image
+              style={{width: 300, 
+                        height: 170,
+                        marginBottom: window.height/20,
                       }}
-                source={{uri: global.picture }}
-              />
- 
-              {renderIf(global.username != 'anonymous', 
-                <Text> {global.username} </Text>
-              )}
-
+              source={{uri: 'http://www.aacf.org/wp-content/uploads/2012/08/admin-ajax.png'}}
+            />
 
           
-              <Text style = {{marginTop: 100}}> {''} </Text>
+            {/* PROFILE IMAGE */}
+            <Image
+              style={{width: window.width/2, 
+                      height: window.width/2,
+                      marginBottom: 10,
+                    }}
+              source={{uri: global.picture }}
+            />
 
+            {/* PROFILE NAME */}
+            {renderIf(global.username != 'anonymous', 
+              <Text> {global.username} </Text>
+            )}
+
+            {/* SPACING */}
+            <Text style = {{marginTop: window.height/20}}> {''} </Text>
+
+          {/* LOGIN */}
           {renderIf(global.username == 'anonymous', 
             <TouchableOpacity onPress={this.logIn.bind(this)}>
-              <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
+              <Text style={{backgroundColor: 'blue', color: 'white', padding: 15}}>
                 Sign in with Facebook
               </Text>
             </TouchableOpacity>
           )}
+
+          {/* LOGOUT */}
           {renderIf(global.username != 'anonymous', 
             <TouchableOpacity onPress={this.logout.bind(this)}>
-              <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
+              <Text style={{backgroundColor: 'blue', color: 'white', padding: 15}}>
                 Sign out
               </Text>
             </TouchableOpacity>
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 100,
+    marginTop: window.height/12,
     marginBottom: 20,
     height: 200,
   },

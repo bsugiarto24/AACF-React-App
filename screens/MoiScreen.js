@@ -43,7 +43,7 @@ export default class MoiScreen extends React.Component {
   }
 
   toggleCal() {
-      global.calendar = !global.calendar;
+      global.calendar = true;
       this.forceUpdate();
   }
 
@@ -103,6 +103,7 @@ export default class MoiScreen extends React.Component {
                   />
 
                 <ActionButton onPress={this._addTime.bind(this)} title="Add Time" />
+                <ActionButton onPress={this._cancel.bind(this)} title="Back" />
               </TouchableOpacity>
             )}
 
@@ -146,6 +147,14 @@ export default class MoiScreen extends React.Component {
       );
     }
   }
+
+
+
+  _cancel() {
+    global.calendar = false;
+    this.forceUpdate();
+  }
+
 }
 
 const styles = StyleSheet.create({

@@ -158,7 +158,7 @@ export default class PrayerScreen extends React.Component {
 
     const onPress = () => {
 
-      if(global.id == item.picture){
+      if(global.id == item.picture && global.id != ''){
         Alert.alert(
           'Delete',
           'Are you sure you want to delete this prayer?',
@@ -171,16 +171,15 @@ export default class PrayerScreen extends React.Component {
       }
 
       if(global.admins.includes(global.id))
-          Alert.alert(
-          'Delete',
-          'Are you sure you want to delete this prayer?',
-          [
-            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-            {text: 'OK', onPress: () => this.delete(item)},
-          ],
-          { cancelable: false }
-      );
-    
+        Alert.alert(
+        'Delete',
+        'Are you sure you want to delete this prayer?',
+        [
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+          {text: 'OK', onPress: () => this.delete(item)},
+        ],
+        { cancelable: false }
+       );
     };
 
 
