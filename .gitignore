@@ -2,3 +2,4 @@ node_modules/**/*
 .exponent/**/*
 .expo/**/*
 .DS_Store
+server/functions/node_modules/**/*
