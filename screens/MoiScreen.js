@@ -19,17 +19,15 @@ import DatePicker from 'react-native-datepicker';
 import * as firebase from 'firebase';
 
 const ActionButton = require('../components/ActionButton');
-
-
 global.calendar = false;
 
 export default class MoiScreen extends React.Component {
-
   static route = {
     navigationBar: {
        title: 'Moment of Impact (MOI)',
     },
   }
+  
   constructor(props) {
     super(props);
     this.itemsRef = firebase.database().ref().child("moi");
@@ -52,7 +50,7 @@ export default class MoiScreen extends React.Component {
       <View style={styles.container}>
           <View style={styles.welcomeContainer}>
             {renderIf(global.calendar == true, 
-              <TouchableOpacity>
+              <View>
                 <Text> Add Time You Can MOI </Text>
 
                 <Text> Date </Text>
@@ -103,17 +101,16 @@ export default class MoiScreen extends React.Component {
                   />
 
                 <ActionButton onPress={this._addTime.bind(this)} title="Add Time" />
+                <Text style={{marginBottom: 0}}> </Text>
                 <ActionButton onPress={this._cancel.bind(this)} title="Back" />
-              </TouchableOpacity>
+              </View>
             )}
 
           {renderIf(global.calendar != true, 
-            <TouchableOpacity onPress={this.toggleCal.bind(this)}>
-              <Text>Calendar</Text>  
-              <Text style={{backgroundColor: 'blue', color: 'white', padding: 20}}>
-                ADD TIME
-              </Text>
-            </TouchableOpacity>
+            <View>
+             <Text> Calendar </Text>
+             <ActionButton onPress={this.toggleCal.bind(this)} title="Add Time" />
+             </View>
           )}
           </View>
     </View>
@@ -173,7 +170,7 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 200,
+    marginTop: global.window.height/12,
     marginBottom: 20,
     height: 200,
   },

@@ -16,13 +16,13 @@ import {
 
 import { MonoText } from '../components/StyledText';
 import renderIf from './renderIf';
-
+//var PushNotification = require('react-native-push-notification');
 
 global.username = 'anonymous';
 global.picture = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.empty = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.id = '';
-const window = Dimensions.get('window');
+global.window = Dimensions.get('window');
 
 export default class HomeScreen extends React.Component {
 
@@ -81,7 +81,7 @@ export default class HomeScreen extends React.Component {
             <Image
               style={{width: 300, 
                         height: 170,
-                        marginBottom: window.height/20,
+                        marginBottom: global.window.height/20,
                       }}
               source={{uri: 'http://www.aacf.org/wp-content/uploads/2012/08/admin-ajax.png'}}
             />
@@ -89,8 +89,8 @@ export default class HomeScreen extends React.Component {
           
             {/* PROFILE IMAGE */}
             <Image
-              style={{width: window.width/2, 
-                      height: window.width/2,
+              style={{width: global.window.width/2, 
+                      height: global.window.width/2,
                       marginBottom: 10,
                     }}
               source={{uri: global.picture }}
@@ -102,7 +102,7 @@ export default class HomeScreen extends React.Component {
             )}
 
             {/* SPACING */}
-            <Text style = {{marginTop: window.height/20}}> {''} </Text>
+            <Text style = {{marginTop: global.window.height/20}}> {''} </Text>
 
           {/* LOGIN */}
           {renderIf(global.username == 'anonymous', 
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: window.height/12,
+    marginTop: global.window.height/12,
     marginBottom: 20,
     height: 200,
   },

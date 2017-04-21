@@ -21,6 +21,7 @@ class AnnouncementItem extends Component {
               />
           )}
 
+          {/* DEFAULT Announcement Image */}
     		  {renderIf(this.props.item.url == '', 
                 <Image
                     style={{width: 50, 
