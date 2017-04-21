@@ -11,6 +11,7 @@ var styles = StyleSheet.create({
   },
   listview: {
     flex: 1,
+
   },
   li: {
     backgroundColor: '#fff',
@@ -18,8 +19,10 @@ var styles = StyleSheet.create({
     borderColor: 'transparent',
     borderWidth: 1,
     paddingLeft: 16,
+    paddingRight: 70,
     paddingTop: 14,
     paddingBottom: 16,
+    flexDirection:'row',
   },
   liContainer: {
     flex: 2,
@@ -27,6 +30,8 @@ var styles = StyleSheet.create({
   liText: {
     color: '#333',
     fontSize: 16,
+    fontFamily: "Cochin",
+    marginTop: 10,
   },
   navbar: {
     alignItems: 'center',

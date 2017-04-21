@@ -21,19 +21,25 @@ import * as firebase from 'firebase';
 const ActionButton = require('../components/ActionButton');
 
 
-global.calendar = true;
+global.calendar = false;
 
 export default class MoiScreen extends React.Component {
 
   static route = {
     navigationBar: {
-      visible: false,
+       title: 'Moment of Impact (MOI)',
     },
   }
   constructor(props) {
     super(props);
     this.itemsRef = firebase.database().ref().child("moi");
-    this.state = {date: new Date()};
+    end = new Date();
+    end.setMinutes(end.getMinutes() + 20);
+
+    this.state = {  date: new Date().toDateString(),
+                    time: new Date().toTimeString(),
+                    endtime: end.toTimeString()
+                  };
   }
 
   toggleCal() {
@@ -49,11 +55,12 @@ export default class MoiScreen extends React.Component {
               <TouchableOpacity>
                 <Text> Add Time You Can MOI </Text>
 
-                 <DatePicker
+                <Text> Date </Text>
+                <DatePicker
                   style={{width: 200}}
                   //date={this.state.date}
                   mode="date"
-                  placeholder= {this.date}
+                  placeholder= {this.state.date}
                   format="MM-DD-YYYY"
                   confirmBtnText="Confirm"
                   cancelBtnText="Cancel"
@@ -62,19 +69,40 @@ export default class MoiScreen extends React.Component {
                     dateInput: {}
                   }}
                   onDateChange={(date) => {this.setState({date: date});}}
-               />
-                 <DatePicker
+                  />
+                
+                <Text>Start Time</Text>
+                <DatePicker
                   style={{width: 200}}
-                  //date={this.state.time}
+                  date={this.state.time}
                   mode="time"
                   format="HH:mm"
                   confirmBtnText="Confirm"
                   cancelBtnText="Cancel"
                   minuteInterval={10}
-                  onDateChange={(time) => {this.setState({time: time});}}
-                />
+                  onDateChange={(time) => {
+                    this.setState({time: time});
+                    temp = new Date('2017','1','20',time.substring(0,2), time.substring(3));
+                    temp.setMinutes(temp.getMinutes() + 20);
+                    this.setState({endtime: temp.toTimeString()});
+                  }}
+                  />
 
-              <ActionButton onPress={this._addItem.bind(this)} title="Add Time" />
+                <Text>End Time</Text>
+                <DatePicker
+                  style={{width: 200}}
+                  date={this.state.endtime}
+                  mode="time"
+                  format="HH:mm"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  minuteInterval={10}
+                  onDateChange={(time) => {
+                    this.setState({endtime: time});
+                  }}
+                  />
+
+                <ActionButton onPress={this._addTime.bind(this)} title="Add Time" />
               </TouchableOpacity>
             )}
 
@@ -92,36 +120,32 @@ export default class MoiScreen extends React.Component {
   }
 
 
-  _addItem() {
+  _addTime() {
 
-
-    //not logged in
-    if(global.username != "anonymous"){
-      Alert.alert(
-        'Not Logged in!',
-        `Please Login!`,
-      );
+    // USER NOT LOGGED IN
+    if(global.username == "anonymous"){
+      Alert.alert(  'Not Logged in!',
+                    `Please Login!`);
     }
     else {
-
       pushRef = this.itemsRef.child(global.username);
-      pushRef.push({text: "yessss",
-                  name: global.username});
-
+      //epoch = this.date.getTime();
+      epoch = "epoch";
+      pushRef.push({  name: global.username,
+                      date: this.state.date,
+                      time: this.state.time.substring(0,8),
+                      endtime: this.state.endtime.substring(0,8),
+                      epoch: epoch
+                    });
       global.calendar = false;
-
+      this.forceUpdate();
 
       Alert.alert(
         'Added Time',
         `Successfully Added Time`,
       );
-
-
-      this.forceUpdate();
     }
-
   }
-
 }
 
 const styles = StyleSheet.create({

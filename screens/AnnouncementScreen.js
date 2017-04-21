@@ -26,7 +26,7 @@ var ds = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 
 
 const StatusBar = require('../components/StatusBar');
 const ActionButton = require('../components/ActionButton');
-const ListItem = require('../components/ListItem');
+const AnnounceItem = require('../components/AnnounceItem');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -43,16 +43,16 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 import renderIf from './renderIf';
 
-
+global.admins = [];
 export default class AnnouncementScreen extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.itemsRef = firebase.database().ref().child("announce");
+    this.adminRef = firebase.database().ref().child("admins");
     this.state = {
         searchString: '',
         isLoading: false,
@@ -60,6 +60,16 @@ export default class AnnouncementScreen extends React.Component {
         jsonData: '',
         dataSource: ds.cloneWithRows([])
     };
+
+    // get admins 
+    firebase.database().ref().child("admins").on('value', (snap) => {
+      global.admins = [];
+      snap.forEach((child) => {
+        global.admins.push(child.val());
+        console.log(child.val());
+      });
+    });
+
   }
 
   getRef() {
@@ -71,12 +81,11 @@ export default class AnnouncementScreen extends React.Component {
 
       // get children as an array
       var items = [];
-      
       snap.forEach((child) => {
-
         items.push({
             title: child.val().text,
-            _key: child.key
+            _key: child.key,
+            url: child.val().url,
         });
       });
 
@@ -90,18 +99,6 @@ export default class AnnouncementScreen extends React.Component {
     this.listenForItems();
   }
 
-  fetchData(){
-    fetch("asdf")
-      .then((response) => response.json())
-      .then((responseData) => {
-        if (responseData) {
-          this.setState({
-            dataSource: ds.cloneWithRows(responseData),
-          });
-        }
-      })
-      .done();
-  }
 
   static route = {
     navigationBar: {
@@ -111,9 +108,6 @@ export default class AnnouncementScreen extends React.Component {
 
 
   render() {
-
-
-     <StatusBar title="Annoucements"/>
         return (
           <View style={styles.container}>
           <Prompt
@@ -133,24 +127,17 @@ export default class AnnouncementScreen extends React.Component {
               })
             }/>
 
-         {/*<Button
-           raised
-           icon={{name: 'cached'}}
-           title='RAISED WITH ICON' />*/}
-
           <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this._renderItem.bind(this)}
-          enableEmptySections={true}/>
+            dataSource={this.state.dataSource}
+            renderRow={this._renderItem.bind(this)}
+            enableEmptySections={true}/>
 
-          {renderIf(global.username == 'Bryan Sugiarto', 
-                    <ActionButton onPress={this._addItem.bind(this)} title="Add" />
+          {renderIf(global.admins.includes(global.id), 
+            <ActionButton onPress={this._addItem.bind(this)} title="Add" />
           )}
-
           </View>
         );
       
-
   }
 
    _addItem() {
@@ -162,16 +149,13 @@ export default class AnnouncementScreen extends React.Component {
 
   _renderItem(item) {
     const onPress = () => {
-
-        if(global.username == 'Bryan Sugiarto')
-          this.itemsRef.child(item._key).remove()
+    if(global.admins.includes(global.id))
+      this.itemsRef.child(item._key).remove()
     };
 
     return (
-      <ListItem item={item} onPress={onPress} />
+      <AnnounceItem item={item} onPress={onPress} />
     );
   }
-
-
 }
 

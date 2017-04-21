@@ -18,7 +18,9 @@ import renderIf from './renderIf';
 
 
 global.username = 'anonymous';
-global.picture = '';
+global.picture = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
+global.empty = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
+global.id = 'sdfs';
 
 export default class HomeScreen extends React.Component {
 
@@ -39,15 +41,11 @@ export default class HomeScreen extends React.Component {
 
     if (type === 'success') {
       // Get the user's name using Facebook's Graph API
-      //const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
-      //const responseJSON = JSON.stringify(await response.json());
-
-      // Get the user's name using Facebook's Graph API
-      const response = await fetch(
-        `https://graph.facebook.com/me?access_token=${token}`);
-      
-      global.username = (await response.json()).name;
-      {/*global.picture = (await response.json()).picture;*/}
+      const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
+      responseObj = (await response.json());
+      global.id = responseObj.id;
+      global.username = responseObj.name;
+      global.picture = "http:/graph.facebook.com/"+ global.id +"/picture?type=large";
 
       Alert.alert(
         'Logged in!',
@@ -55,14 +53,13 @@ export default class HomeScreen extends React.Component {
       );
 
       this.forceUpdate();
-
     }
   }
 
   async logout() {
-      
-      
       global.username = 'anonymous';
+      global.picture = global.empty;
+      global.id = '';
 
       Alert.alert(
         'Logged Out!',
@@ -79,26 +76,32 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
 
 
-        <Text>
-          {global.picture}
-        </Text> 
-
+          <Text>{global.id}</Text>
 
           <View style={styles.welcomeContainer}>
-            <Image
+           {/*} <Image
               source={require('../assets/images/exponent-icon@3x.png')}
               style={styles.welcomeImage}
-            />
+            /> */}
 
-          {renderIf(global.picture.length != 0, 
-            <TouchableOpacity onPress={this.logIn.bind(this)}>
+        
+            
+              {/* PROFILE IMAGE */}
               <Image
-                style={{width: 50, height: 50}}
+                style={{width: 150, 
+                        height: 150,
+                        marginBottom: 10,
+                      }}
                 source={{uri: global.picture }}
               />
-            </TouchableOpacity>
-          )}
+ 
+              {renderIf(global.username != 'anonymous', 
+                <Text> {global.username} </Text>
+              )}
 
+
+          
+              <Text style = {{marginTop: 100}}> {''} </Text>
 
           {renderIf(global.username == 'anonymous', 
             <TouchableOpacity onPress={this.logIn.bind(this)}>
@@ -124,7 +127,7 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#C4CCE1',
   },
   developmentModeText: {
     marginBottom: 20,
@@ -137,7 +140,7 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 200,
+    marginTop: 100,
     marginBottom: 20,
     height: 200,
   },

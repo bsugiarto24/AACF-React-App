@@ -51,7 +51,7 @@ export default class RootNavigation extends React.Component {
         {/* Prayer */}
         <TabNavigationItem
           id="links"
-          renderIcon={isSelected => this._renderIcon('signing', isSelected)}>
+          renderIcon={isSelected => this._renderIcon('comments', isSelected)}>
           <StackNavigation initialRoute="links" />
         </TabNavigationItem>
 

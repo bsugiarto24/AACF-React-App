@@ -4,7 +4,7 @@ import {
   View,
   Text,
   ListView,
-  AlertIOS
+  Alert
 } from 'react-native';
 
 import {
@@ -65,7 +65,8 @@ export default class PrayerScreen extends React.Component {
 
         items.push({
             title: child.val().text + " by " + pname,
-            _key: child.key
+            _key: child.key,
+            picture: child.val().picture
         });
       });
 
@@ -105,7 +106,7 @@ export default class PrayerScreen extends React.Component {
 
         return (
           <View style={styles.container}>
-          
+    
           <Prompt
             title="Prayer Request"
             placeholder="Start typing"
@@ -119,22 +120,23 @@ export default class PrayerScreen extends React.Component {
               (value) => this.setState({
                 promptVisible: false,
                 message: `You said "${value}"`,
-                onPress: this.itemsRef.push({text: value,
-                  name: global.username})
+                onPress: this.itemsRef.push(
+                  { text: value,
+                    name: global.username,
+                    picture: global.id
+                  })
               })
-            }/>
+           }/>
 
 
           <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this._renderItem.bind(this)}
-          enableEmptySections={true}/>
+            dataSource={this.state.dataSource}
+            renderRow={this._renderItem.bind(this)}
+            enableEmptySections={true}/>
 
           <ActionButton onPress={this._addItem.bind(this)} title="Add" />
-
           </View>
         );
-      
   }
 
    _addItem() {
@@ -144,16 +146,46 @@ export default class PrayerScreen extends React.Component {
       });
   }
 
+
+  delete(item){
+      this.itemsRef.child(item._key).remove()
+  }
+
+  // this.itemsRef.child(item._key).remove()
+
   _renderItem(item) {
+    
+
     const onPress = () => {
-        this.itemsRef.child(item._key).remove()
+
+      if(global.id == item.picture){
+        Alert.alert(
+          'Delete',
+          'Are you sure you want to delete this prayer?',
+          [
+            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+            {text: 'OK', onPress: () => this.delete(item)},
+          ],
+          { cancelable: false }
+        );
+      }
+
+      if(global.admins.includes(global.id))
+          Alert.alert(
+          'Delete',
+          'Are you sure you want to delete this prayer?',
+          [
+            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+            {text: 'OK', onPress: () => this.delete(item)},
+          ],
+          { cancelable: false }
+      );
+    
     };
+
 
     return (
       <ListItem item={item} onPress={onPress} />
     );
   }
-
-
 }
-

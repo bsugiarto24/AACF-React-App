@@ -60,9 +60,6 @@ export default class MoiScreen extends React.Component {
             color="#841584"
           />
 
-
-          
-
           <DatePicker
             style={{width: 200}}
             //date={this.state.date}
@@ -78,7 +75,7 @@ export default class MoiScreen extends React.Component {
               dateInput: {}
             }}
             onDateChange={(date) => {this.setState({date: date})}}
-          />
+            />
 
           <DatePicker
             style={{width: 200}}
@@ -89,7 +86,7 @@ export default class MoiScreen extends React.Component {
             cancelBtnText="Cancel"
             minuteInterval={10}
             onDateChange={(time) => {this.setState({time: time});}}
-          />
+            />
 
         <ActionButton onPress={this._addItem.bind(this)} title="Add Time" />
 
@@ -103,7 +100,6 @@ export default class MoiScreen extends React.Component {
       `Successful in Adding time`,
     );
   }
-
 }
 
 
@@ -124,5 +120,3 @@ const styles2 = StyleSheet.create({
     marginBottom: 5
   }
 });
-
-
