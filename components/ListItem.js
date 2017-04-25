@@ -21,7 +21,7 @@ class ListItem extends Component {
               />
           )}
 
-		  {renderIf(this.props.item.picture == '', 
+		      {renderIf(this.props.item.picture == '', 
             <Image
                 style={{width: 50, 
                         height: 50,

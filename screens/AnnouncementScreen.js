@@ -96,7 +96,7 @@ export default class AnnouncementScreen extends React.Component {
 
   static route = {
     navigationBar: {
-      title: 'Annoucements',
+      title: 'Announcements',
     },
   }
 

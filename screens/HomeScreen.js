@@ -16,7 +16,7 @@ import {
 
 import { MonoText } from '../components/StyledText';
 import renderIf from './renderIf';
-//var PushNotification = require('react-native-push-notification');
+//import PushNotification from 'react-native-push-notification';
 
 global.username = 'anonymous';
 global.picture = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
@@ -34,7 +34,6 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
   }
-
 
   async logIn() {
     const { type, token } = await Exponent.Facebook.logInWithReadPermissionsAsync('1534983139847058', {
