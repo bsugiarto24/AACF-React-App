@@ -146,6 +146,7 @@ export default class PrayerScreen extends React.Component {
           renderRow={this._renderItem.bind(this)}
           enableEmptySections={true}/>
 
+        {/*ACTION BUTTON TO ADD PRAYER*/}
         {renderIf(global.id != '', 
           <View style={{flexDirection:'row'}}>
             <View style={{width:global.window.width/2}}>

@@ -22,6 +22,7 @@ import Calendar from 'react-native-calendar-component';
 
 const ActionButton = require('../components/ActionButton');
 global.calendar = false;
+global.moilist = false;
 
 export default class MoiScreen extends React.Component {
   static route = {
@@ -60,7 +61,10 @@ export default class MoiScreen extends React.Component {
     }
 
   handleDateSelect(date) {
+
+        global.moilist = true;
         alert('clicked: ${this.state.date.toString()}');
+        this.forceUpdate();
     }
 
   toggleCal() {
@@ -68,11 +72,16 @@ export default class MoiScreen extends React.Component {
     this.forceUpdate();
   }
 
+  toggleMoiList(){
+    global.moilist = false;
+    this.forceUpdate();
+  }
+
   render() {
    return (
     <View style={styles.container}>
        <View style={styles.welcomeContainer}>
-        {renderIf(global.calendar == true, 
+        {renderIf(global.calendar == true && global.moilist == false, 
           <View>
            <Text> Add Time You Can MOI </Text>
 
@@ -129,21 +138,34 @@ export default class MoiScreen extends React.Component {
           </View>
         )}
 
-       {renderIf(global.calendar != true, 
+       {renderIf(global.calendar != true && global.moilist == false, 
          <View>
           <View>
            <Calendar
             date={this.state.date}
             onPrevButtonPress={() => this.handlePrevButtonPress()}
-            onNextButtonPress={() => this.handleNextButtonPress()} />
+            onNextButtonPress={() => this.handleNextButtonPress()} 
+            onDateSelect={() => this.handleDateSelect()} />
           </View>
           <View 
            style={{marginTop: 140}}>
            <ActionButton onPress={this.toggleCal.bind(this)} title="Add Time" />
           </View>
-
          </View>
        )}
+
+
+      {renderIf(global.moilist == true, 
+         <View>
+          <Text> list mois </Text>
+          <ActionButton onPress={this.toggleMoiList.bind(this)} title="Back" />
+         </View>
+       )}
+
+
+
+
+
        </View>
    </View>
    );
@@ -191,84 +213,10 @@ const styles = StyleSheet.create({
    flex: 1,
    backgroundColor: '#fff',
   },
-  developmentModeText: {
-   marginBottom: 20,
-   color: 'rgba(0,0,0,0.4)',
-   fontSize: 15,
-   textAlign: 'center',
-  },
-  contentContainer: {
-   paddingTop: 50,
-  },
   welcomeContainer: {
    alignItems: 'center',
    marginTop: global.window.height/12,
    marginBottom: 20,
    height: 200,
-  },
-  welcomeImage: {
-   width: 250,
-   height: 200,
-   marginTop: 3,
-  },
-  getStartedContainer: {
-   alignItems: 'center',
-   marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-   marginVertical: 7,
-  },
-  codeHighlightText: {
-   color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-   backgroundColor: 'rgba(0,0,0,0.05)',
-   borderRadius: 3,
-   paddingHorizontal: 4,
-  },
-  getStartedText: {
-   fontSize: 17,
-   color: 'rgba(96,100,109, 1)',
-   lineHeight: 23,
-   textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-   position: 'absolute',
-   bottom: 0,
-   left: 0,
-   right: 0,
-   ...Platform.select({
-    ios: {
-      shadowColor: 'black',
-      shadowOffset: {height: -3},
-      shadowOpacity: 0.1,
-      shadowRadius: 3,
-    },
-    android: {
-      elevation: 20,
-    },
-   }),
-   alignItems: 'center',
-   backgroundColor: '#fbfbfb',
-   paddingVertical: 20,
-  },
-  tabBarInfoText: {
-   fontSize: 17,
-   color: 'rgba(96,100,109, 1)',
-   textAlign: 'center',
-  },
-  navigationFilename: {
-   marginTop: 5,
-  },
-  helpContainer: {
-   marginTop: 15,
-   alignItems: 'center',
-  },
-  helpLink: {
-   paddingVertical: 15,
-  },
-  helpLinkText: {
-   fontSize: 14,
-   color: '#2e78b7',
-  },
+  }
 });
