@@ -174,7 +174,6 @@ export default class PrayerScreen extends React.Component {
     });
   }
 
-
   _delete(item){
       this.itemsRef.child(item._key).remove()
   }
