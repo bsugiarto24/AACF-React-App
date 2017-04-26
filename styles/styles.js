@@ -30,7 +30,7 @@ var styles = StyleSheet.create({
   liText: {
     color: '#333',
     fontSize: 16,
-    fontFamily: "Cochin",
+    //fontFamily: "Cochin",
     marginTop: 10,
   },
   navbar: {
