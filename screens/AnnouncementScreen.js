@@ -51,7 +51,7 @@ export default class AnnouncementScreen extends React.Component {
   constructor(props) {
     super(props);
 
-    this.itemsRef = firebase.database().ref().child("announce");
+    global.announceRef = firebase.database().ref().child("announce");
     this.adminRef = firebase.database().ref().child("admins");
     this.state = {
         searchString: '',
@@ -93,6 +93,19 @@ export default class AnnouncementScreen extends React.Component {
     this.listenForItems();
   }
 
+  deletefunc(item){
+    if(global.admins.includes(global.id))
+      Alert.alert(
+      'Delete',
+      'Are you sure you want to delete this announcement?',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'},
+        {text: 'OK', onPress: () => this.announceRef.child(item._key).remove()},
+      ],
+      { cancelable: false }
+      );
+  }
+
 
   static route = {
     navigationBar: {
@@ -115,7 +128,7 @@ export default class AnnouncementScreen extends React.Component {
           (value) => this.setState({
             promptVisible: false,
             message: `You said "${value}"`,
-            onPress: this.itemsRef.push({
+            onPress: this.announceRef.push({
               text: value.substring(0,value.indexOf('*')),
               url: value.substring(value.indexOf('*') + 1)
             })
@@ -141,6 +154,8 @@ export default class AnnouncementScreen extends React.Component {
       });
   }
 
+
+
   _renderItem(item) {
     const onPress = () => {
     if(global.admins.includes(global.id))
@@ -149,14 +164,14 @@ export default class AnnouncementScreen extends React.Component {
       'Are you sure you want to delete this announcement?',
       [
         {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'},
-        {text: 'OK', onPress: () => this.itemsRef.child(item._key).remove()},
+        {text: 'OK', onPress: () => this.announceRef.child(item._key).remove()},
       ],
       { cancelable: false }
       );
     };
 
     return (
-      <AnnounceItem item={item} onPress={onPress} />
+      <AnnounceItem item={item} onPress={onPress} deletefunc={this._deletefunc}  />
     );
   }
 }

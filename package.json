@@ -28,6 +28,7 @@
     "react-native-prompt": "^1.0.0",
     "react-native-push-notification": "^2.2.1",
     "react-native-simple-store": "^1.1.0",
+    "react-native-swipeout": "^2.1.1",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"
   },

@@ -18,6 +18,7 @@ import * as firebase from 'firebase';
 import ReactNative from 'react-native';
 import renderIf from './renderIf';
 
+
 var ds = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 })
 
 const StatusBar = require('../components/StatusBar');
@@ -30,11 +31,21 @@ const styles = StyleSheet.create({
   },
 });
 
+
+var Swipeout = require('react-native-swipeout')
+
+// Buttons
+var swipeoutBtns = [
+  {
+    text: 'Button'
+  }
+]
+
 export default class PrayerScreen extends React.Component {
 
   constructor(props) {
     super(props);
-    this.itemsRef = firebase.database().ref().child("prayer");
+    global.itemsRef = firebase.database().ref().child("prayer");
     this.state = {
         searchString: '',
         isLoading: false,
@@ -140,6 +151,8 @@ export default class PrayerScreen extends React.Component {
                 })
             })
           }/>
+
+
 
         <ListView
           dataSource={this.state.dataSource}
