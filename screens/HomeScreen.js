@@ -16,13 +16,27 @@ import {
 
 import { MonoText } from '../components/StyledText';
 import renderIf from './renderIf';
+import * as firebase from 'firebase';
+
 //import PushNotification from 'react-native-push-notification';
 
-global.username = 'anonymous';
+global.username = 'anonymous'; //anonymous
 global.picture = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.empty = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.id = '';
 global.window = Dimensions.get('window');
+global.admins = [];
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDxe3Adw94y0kEaoyUckhJRPYV8kaHLQ8o",
+    authDomain: "aacf2-dc0b9.firebaseapp.com",
+    databaseURL: "https://aacf2-dc0b9.firebaseio.com",
+    storageBucket: "aacf2-dc0b9.appspot.com",
+    messagingSenderId: "874313332955"
+};
+
+firebase.initializeApp(firebaseConfig);
+
 
 export default class HomeScreen extends React.Component {
 
@@ -32,7 +46,24 @@ export default class HomeScreen extends React.Component {
     },
   }
   constructor(props) {
+
     super(props);
+
+   /* PushNotification.localNotificationSchedule({
+      message: "My Notification Message", // (required)
+      date: new Date(Date.now() + (5 * 1000)) // in 60 secs
+    });*/
+
+    global.announceRef = firebase.database().ref().child("announce");
+    this.adminRef = firebase.database().ref().child("admins");
+
+    // get admins 
+    firebase.database().ref().child("admins").on('value', (snap) => {
+      global.admins = [];
+      snap.forEach((child) => {
+        global.admins.push("" + child.val());
+      });
+    });
   }
 
   async logIn() {
@@ -44,7 +75,7 @@ export default class HomeScreen extends React.Component {
       // Get the user's name using Facebook's Graph API
       const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
       responseObj = (await response.json());
-      global.id = responseObj.id;
+      global.id = responseObj.id + "";
       global.username = responseObj.name;
       global.picture = "http:/graph.facebook.com/"+ global.id +"/picture?type=large";
 
@@ -68,7 +99,6 @@ export default class HomeScreen extends React.Component {
       );
 
       this.forceUpdate();
-    
   }
 
 

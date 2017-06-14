@@ -34,25 +34,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDxe3Adw94y0kEaoyUckhJRPYV8kaHLQ8o",
-    authDomain: "aacf2-dc0b9.firebaseapp.com",
-    databaseURL: "https://aacf2-dc0b9.firebaseio.com",
-    storageBucket: "aacf2-dc0b9.appspot.com",
-    messagingSenderId: "874313332955"
-};
 
-firebase.initializeApp(firebaseConfig);
 import renderIf from './renderIf';
 
-global.admins = [];
+
 export default class AnnouncementScreen extends React.Component {
 
   constructor(props) {
     super(props);
 
-    global.announceRef = firebase.database().ref().child("announce");
-    this.adminRef = firebase.database().ref().child("admins");
     this.state = {
         searchString: '',
         isLoading: false,
@@ -60,15 +50,6 @@ export default class AnnouncementScreen extends React.Component {
         jsonData: '',
         dataSource: ds.cloneWithRows([])
     };
-
-    // get admins 
-    firebase.database().ref().child("admins").on('value', (snap) => {
-      global.admins = [];
-      snap.forEach((child) => {
-        global.admins.push("" + child.val());
-      });
-    });
-
   }
 
   listenForItems() {

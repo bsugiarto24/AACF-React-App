@@ -38,16 +38,26 @@ export default class MoiScreen extends React.Component {
   
   constructor(props) {
    super(props);
+
    this.itemsRef = firebase.database().ref().child("moi");
+   this.moibyname = firebase.database().ref().child("moibyname");
+
    end = new Date();
    end.setMinutes(end.getMinutes() + 20);
+
+   temp = new Date();
+   temp.setHours(0);
+   temp.setMinutes(0);
+   temp.setSeconds(0);
+
 
    this.state = {  datestring: new Date().toDateString(),
               time: new Date().toTimeString(),
               endtime: end.toTimeString(),
-              date: new Date(),
+              date: temp,
               dataSource: ds.cloneWithRows([]),
-              currentDate: new Date()
+              currentDate: new Date(),
+              selectedDate: new Date()
           };
   }
 
@@ -71,26 +81,27 @@ export default class MoiScreen extends React.Component {
   }
 
   handleDateSelect(in_date) {
-        global.moilist = true;
-        this.itemsRef.child(in_date.toDateString()).on('value', (snap) => {
-
-        // get children as an array
-        var items = [];
-        snap.forEach((child) => {
-          items.push({
-              title: child.val().date,
-              _key: child.key,
-              time: child.val().time,
-              date: child.val().date,
-              name: child.val().name,
-              picture: child.val().picture
-          });
-          });
-          this.setState({
-            dataSource: ds.cloneWithRows(items)
-          });
+    global.moilist = true;
+    this.itemsRef.child(in_date.toDateString()).orderByChild("time").on('value', (snap) => {
+      this.state.selectedDate = in_date;
+      // get children as an array
+      var items = [];
+      snap.forEach((child) => {
+        items.push({
+            title: child.val().date,
+            _key: child.key,
+            time: child.val().time,
+            date: child.val().date,
+            name: child.val().name,
+            picture: child.val().picture,
+            endtime: child.val().endtime.substring(0,5),
         });
-        this.forceUpdate();
+      });
+      this.setState({
+        dataSource: ds.cloneWithRows(items)
+      });
+    });
+    this.forceUpdate();
   }
 
   toggleCal() {
@@ -137,11 +148,11 @@ export default class MoiScreen extends React.Component {
         {renderIf(global.calendar == true && global.moilist == false, 
          <View style={styles.welcomeContainer}>
           <View>
-           <Text> Add Time You Can MOI </Text>
+           <Text style={styles.title2}> Add Time To MOI </Text>
            <Text> Date </Text>
            <DatePicker
             style={{width: 200}}
-            //date={this.state.date}
+            date={this.state.date}
             mode="date"
             placeholder= {this.state.datestring}
             format="MM-DD-YYYY"
@@ -189,6 +200,7 @@ export default class MoiScreen extends React.Component {
             }}
             />
 
+            <Text> </Text>
            <ActionButton onPress={this._addTime.bind(this)} title="Add Time" />
            <Text style={{marginBottom: 0}}> </Text>
            <ActionButton onPress={this._cancel.bind(this)} title="Back" />
@@ -220,12 +232,15 @@ export default class MoiScreen extends React.Component {
 
       {renderIf(global.moilist == true, 
          <View>
+
+
+          <Text style={styles.title}> {this.state.selectedDate.toDateString().substring(4)} </Text>
+
           <ListView
             style={{height: global.window.height -100, width:global.window.width}}
             dataSource={this.state.dataSource}
             renderRow={this._renderItem.bind(this)}
             enableEmptySections={true}/>
-
 
           <ActionButton 
             style={{height: 100, width:global.window.width}} 
@@ -245,18 +260,36 @@ export default class MoiScreen extends React.Component {
     }
     else {
 
-      alert(this.state.date);
       pushRef = this.itemsRef.child(this.state.datestring);
-      //epoch = this.date.getTime();
-      epoch = "epoch";
-      pushRef.push({  
+      epoch = this.state.date.getTime();
+
+      epoch += 3600000* parseInt(this.state.time.substring(0,2));
+
+      epoch += 60000 * parseInt(this.state.time.substring(3,5));
+
+      var newPush = pushRef.push({  
               name: global.username,
               date: this.state.date.toDateString(),
               time: this.state.time.substring(0,8),
               endtime: this.state.endtime.substring(0,8),
               epoch: epoch,
+              id: global.id,
               picture: global.picture
             });
+
+
+      pushRef2 = this.moibyname.child(global.username);
+      pushRef2.push({  
+              date: this.state.date.toDateString(),
+              time: this.state.time.substring(0,8),
+              endtime: this.state.endtime.substring(0,8),
+              epoch: epoch,
+              id: global.id,
+              picture: global.picture,
+              key: newPush.key
+            });
+
+
       global.calendar = false;
       this.forceUpdate();
 
@@ -309,5 +342,16 @@ const styles = StyleSheet.create({
     left: 0, 
     justifyContent: 'flex-end', 
     width: global.window.width,
- }
+ },
+ title: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+ title2: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  }
 });
