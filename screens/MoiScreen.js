@@ -11,7 +11,8 @@ import {
   View,
   Alert,
   Button,
-  AsyncStorage
+  AsyncStorage,
+  ListView
 } from 'react-native';
 
 import { MonoText } from '../components/StyledText';
@@ -23,6 +24,10 @@ import Calendar from 'react-native-calendar-component';
 const ActionButton = require('../components/ActionButton');
 global.calendar = false;
 global.moilist = false;
+const MoiItem = require('../components/MoiItem');
+
+var ds = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 })
+
 
 export default class MoiScreen extends React.Component {
   static route = {
@@ -40,32 +45,53 @@ export default class MoiScreen extends React.Component {
    this.state = {  datestring: new Date().toDateString(),
               time: new Date().toTimeString(),
               endtime: end.toTimeString(),
-              date: new Date()
-            };
+              date: new Date(),
+              dataSource: ds.cloneWithRows([]),
+              currentDate: new Date()
+          };
   }
 
+
+
+
   handleNextButtonPress() {
-        const date = new Date(this.state.date);
+        const date = new Date(this.state.currentDate);
         date.setMonth(date.getMonth() + 1);
         this.setState({
-            date
+            currentDate: date
         });
   }
 
   handlePrevButtonPress() {
-        const date = new Date(this.state.date);
+        const date = new Date(this.state.currentDate);
         date.setMonth(date.getMonth() - 1);
         this.setState({
-            date
+            currentDate: date
         });
-    }
+  }
 
-  handleDateSelect(date) {
-
+  handleDateSelect(in_date) {
         global.moilist = true;
-        alert('clicked: ${this.state.date.toString()}');
+        this.itemsRef.child(in_date.toDateString()).on('value', (snap) => {
+
+        // get children as an array
+        var items = [];
+        snap.forEach((child) => {
+          items.push({
+              title: child.val().date,
+              _key: child.key,
+              time: child.val().time,
+              date: child.val().date,
+              name: child.val().name,
+              picture: child.val().picture
+          });
+          });
+          this.setState({
+            dataSource: ds.cloneWithRows(items)
+          });
+        });
         this.forceUpdate();
-    }
+  }
 
   toggleCal() {
     global.calendar = true;
@@ -77,14 +103,41 @@ export default class MoiScreen extends React.Component {
     this.forceUpdate();
   }
 
+ listenForItems() {
+    this.itemsRef.child(this.state.datestring).on('value', (snap) => {
+
+      // get children as an array
+      var items = [];
+      snap.forEach((child) => {
+        items.push({
+            title: child.val().date,
+            _key: child.key,
+            time: child.val().time,
+            date: child.val().date,
+            name: child.val().name,
+            picture: child.val().picture
+        });
+      });
+      this.setState({
+        dataSource: ds.cloneWithRows(items)
+      });
+    });
+  }
+
+  componentWillMount() {
+    this.listenForItems();
+  }
+
+
   render() {
    return (
     <View style={styles.container}>
-       <View style={styles.welcomeContainer}>
+        
+
         {renderIf(global.calendar == true && global.moilist == false, 
+         <View style={styles.welcomeContainer}>
           <View>
            <Text> Add Time You Can MOI </Text>
-
            <Text> Date </Text>
            <DatePicker
             style={{width: 200}}
@@ -98,7 +151,11 @@ export default class MoiScreen extends React.Component {
               dateIcon: {},
               dateInput: {}
             }}
-            onDateChange={(date2) => {this.setState({datestring: date2.toDateString()});}}
+            onDateChange={(date2) => {
+              this.setState({
+                date: new Date(date2.substring(6), date2.substring(0,2) - 1, date2.substring(3,5), 0, 0, 0, 0),
+                datestring: new Date(date2.substring(6), date2.substring(0,2) - 1, date2.substring(3,5), 0, 0, 0, 0).toDateString()});
+            }}
             />
            
            <Text>Start Time</Text>
@@ -136,70 +193,98 @@ export default class MoiScreen extends React.Component {
            <Text style={{marginBottom: 0}}> </Text>
            <ActionButton onPress={this._cancel.bind(this)} title="Back" />
           </View>
+          </View>
         )}
+
+
+
 
        {renderIf(global.calendar != true && global.moilist == false, 
          <View>
           <View>
            <Calendar
-            date={this.state.date}
+            date={this.state.currentDate}
             onPrevButtonPress={() => this.handlePrevButtonPress()}
             onNextButtonPress={() => this.handleNextButtonPress()} 
-            onDateSelect={() => this.handleDateSelect()} />
+            onDateSelect={(date) => this.handleDateSelect(date)} />
           </View>
           <View 
-           style={{marginTop: 140}}>
+           style={styles.footer}>
            <ActionButton onPress={this.toggleCal.bind(this)} title="Add Time" />
           </View>
          </View>
        )}
 
 
+
+
       {renderIf(global.moilist == true, 
          <View>
-          <Text> list mois </Text>
-          <ActionButton onPress={this.toggleMoiList.bind(this)} title="Back" />
+          <ListView
+            style={{height: global.window.height -100, width:global.window.width}}
+            dataSource={this.state.dataSource}
+            renderRow={this._renderItem.bind(this)}
+            enableEmptySections={true}/>
+
+
+          <ActionButton 
+            style={{height: 100, width:global.window.width}} 
+            onPress={this.toggleMoiList.bind(this)} title="Back" />
          </View>
        )}
-
-
-
-
-
-       </View>
    </View>
    );
   }
 
 
   _addTime() {
+    // USER NOT LOGGED IN
+    if(global.username == "anonymous"){
+      Alert.alert(  'Not Logged in!',
+            `Please Login!`);
+    }
+    else {
 
-   // USER NOT LOGGED IN
-   if(global.username == "anonymous"){
-    Alert.alert(  'Not Logged in!',
-              `Please Login!`);
-   }
-   else {
-    pushRef = this.itemsRef.child(global.username);
-    //epoch = this.date.getTime();
-    epoch = "epoch";
-    pushRef.push({  name: global.username,
-               date: this.state.date,
-               time: this.state.time.substring(0,8),
-               endtime: this.state.endtime.substring(0,8),
-               epoch: epoch
-              });
-    global.calendar = false;
-    this.forceUpdate();
+      alert(this.state.date);
+      pushRef = this.itemsRef.child(this.state.datestring);
+      //epoch = this.date.getTime();
+      epoch = "epoch";
+      pushRef.push({  
+              name: global.username,
+              date: this.state.date.toDateString(),
+              time: this.state.time.substring(0,8),
+              endtime: this.state.endtime.substring(0,8),
+              epoch: epoch,
+              picture: global.picture
+            });
+      global.calendar = false;
+      this.forceUpdate();
 
-    Alert.alert(
-      'Added Time',
-      `Successfully Added Time`,
-    );
-   }
+      Alert.alert(
+        'Added Time',
+        `Successfully Added Time`,);
+    }
   }
 
 
+   _renderItem(item) {
+
+    const onPress = () => {
+      Alert.alert(
+      'Delete',
+      'Are you sure you want to delete this announcement?',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'},
+        {text: 'OK', onPress: () => this.itemsRef.child(item._key).remove()},
+      ],
+      { cancelable: false }
+      );
+    };
+
+    return (
+      <MoiItem item={item} onPress={onPress} />
+    );
+  }
 
   _cancel() {
    global.calendar = false;
@@ -218,5 +303,11 @@ const styles = StyleSheet.create({
    marginTop: global.window.height/12,
    marginBottom: 20,
    height: 200,
-  }
+  },
+  footer: {
+    top: 40,
+    left: 0, 
+    justifyContent: 'flex-end', 
+    width: global.window.width,
+ }
 });
