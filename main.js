@@ -111,20 +111,19 @@ class AppContainer extends React.Component {
 
     date = new Date().toDateString();
     itemRef = firebase.database().ref().child("moi").child(date);
-    count =0;
+    
     itemRef.on('value', (snap) => {
+      count = 0;
       snap.forEach((child) => {
         count+=1;
       });
+
+      Exponent.Notifications.presentLocalNotificationAsync(
+      {title: 'recieved', 
+        data: count + ' slots of MOIs scheduled for today!', 
+        body: count + ' slots of MOIs scheduled for today!'}, 
+      {time: 1, repeat: 'day'});
     });
-
-    Exponent.Notifications.presentLocalNotificationAsync(
-              {title: 'recieved', 
-              data: count + ' slots of MOIs scheduled for today!', 
-              body: count + ' slots of MOIs scheduled for today!'}, 
-
-    {time: 1, repeat: 'day'});
-
 
     //Exponent.Notifications.setBadgeNumberAsync(count);
 

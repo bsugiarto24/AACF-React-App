@@ -18,9 +18,7 @@ class MiniMoiItem extends Component {
 
   deletemini(){
 
-    alert(global.id);
-
-    if(global.admins.includes(global.id)){
+    if(global.admins.includes(global.id) || this.props.item.id == global.id){
       global.moiRef.child(this.props.item.date).child(this.props.item.key).remove();
       global.moibynameRef.child(this.props.item.name).child(this.props.item._key).remove();
     }
@@ -71,7 +69,7 @@ class MiniMoiItem extends Component {
                       style={{width: 50, 
                               height: 50,
                               marginRight: 10,
-                              marginLeft: 30,
+                              marginLeft: 50,
                             }}
                       source={{uri: this.props.item.picture}}
                     />
@@ -83,6 +81,7 @@ class MiniMoiItem extends Component {
                           style={{width: 50, 
                                   height: 50,
                                   marginRight: 10,
+                                  marginLeft: 50,
                                 }}
                           source={{uri: 'http://www.base11.com/wp-content/uploads/2016/09/Bryan-small-251x300.jpg' }}
                       />

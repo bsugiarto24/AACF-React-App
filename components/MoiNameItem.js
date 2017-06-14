@@ -86,6 +86,18 @@ class MoiNameItem extends Component {
                   /> 
               )}
 
+              {renderIf(!this.checkIfActive(this.props.item.name), 
+                  <Image
+                    style={{width: 20, 
+                            height: 20,
+                            marginRight: 10,
+                            justifyContent: 'center',
+                            marginTop: 15 
+                          }}
+                    source={{uri:'g'}}
+                  /> 
+              )}
+
 
               {renderIf(this.props.item.picture != '', 
                 <Image
