@@ -109,7 +109,7 @@ export default class AnnouncementScreen extends React.Component {
           (value) => this.setState({
             promptVisible: false,
             message: `You said "${value}"`,
-            onPress: this.announceRef.push({
+            onPress: global.announceRef.push({
               text: value.substring(0,value.indexOf('*')),
               url: value.substring(value.indexOf('*') + 1)
             })

@@ -1,4 +1,6 @@
-import Exponent from 'exponent';
+import Exponent, {
+  Notifications, Permissions
+} from 'exponent';
 import React from 'react';
 import {
   AppRegistry,
@@ -7,6 +9,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
 import {
   NavigationProvider,
   StackNavigation,
@@ -17,15 +20,68 @@ import {
 
 import Router from './navigation/Router';
 import cacheAssetsAsync from './utilities/cacheAssetsAsync';
+import * as firebase from 'firebase';
+const firebaseConfig = {
+    apiKey: "AIzaSyDxe3Adw94y0kEaoyUckhJRPYV8kaHLQ8o",
+    authDomain: "aacf2-dc0b9.firebaseapp.com",
+    databaseURL: "https://aacf2-dc0b9.firebaseio.com",
+    storageBucket: "aacf2-dc0b9.appspot.com",
+    messagingSenderId: "874313332955"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+//var registerForPushNotificationsAsync =  require('./api/registerForPushNotificationsAsync');
+
+const PUSH_ENDPOINT = 'https://frozen-temple-80213.herokuapp.com/';
 
 class AppContainer extends React.Component {
   state = {
     appIsReady: false,
+    notification: {},
   }
 
+   async _registerForPushNotificationsAsync() {
+    // Android remote notification permissions are granted during the app
+    // install, so this will only ask on iOS
+    let { status } = await Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS);
+
+    // Stop here if the user did not grant permissions
+    if (status !== 'granted') {
+      return;
+    }
+
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExponentPushTokenAsync();
+
+    // POST the token to our backend so we can use it to send pushes from there
+    return fetch(PUSH_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: {
+          value: token,
+         },
+         user: {
+          username: 'Brent',
+         },
+      }),
+    });
+  }
+
+
   componentWillMount() {
+    //this._registerForPushNotificationsAsync();
+    //this._notificationSubscription = Notifications.addListener(this._handleNotification);
     this._loadAssetsAsync();
   }
+
+  /*_handleNotification = (notification) => {
+    this.setState({notification: notification});
+  };*/
 
   async _loadAssetsAsync() {
     try {
@@ -49,7 +105,29 @@ class AppContainer extends React.Component {
     }
   }
 
+ 
+
   render() {
+
+    date = new Date().toDateString();
+    itemRef = firebase.database().ref().child("moi").child(date);
+    count =0;
+    itemRef.on('value', (snap) => {
+      snap.forEach((child) => {
+        count+=1;
+      });
+    });
+
+    Exponent.Notifications.presentLocalNotificationAsync(
+              {title: 'recieved', 
+              data: count + ' slots of MOIs scheduled for today!', 
+              body: count + ' slots of MOIs scheduled for today!'}, 
+
+    {time: 1, repeat: 'day'});
+
+
+    //Exponent.Notifications.setBadgeNumberAsync(count);
+
     if (this.state.appIsReady) {
       return (
         <View style={styles.container}>

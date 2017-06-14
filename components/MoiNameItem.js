@@ -48,6 +48,24 @@ class MoiNameItem extends Component {
     );
   }
 
+  checkIfActive(name){
+    date = new Date().toDateString();
+    ret = false;
+    i = 0;
+
+    while(i < this.props.item.data.length) {
+      endTime = this.props.item.data[i].date;
+      if(date === endTime){
+        return true;
+      }
+      i++;
+    }
+
+
+    return ret;
+
+  }
+
   render() {
 
     this.state.dataSource = ds.cloneWithRows(this.props.item.data);
@@ -56,6 +74,19 @@ class MoiNameItem extends Component {
           <TouchableHighlight
                 onPress={this.toggleData.bind(this)}>
             <View style={styles.li}>
+               {renderIf(this.checkIfActive(this.props.item.name), 
+                  <Image
+                    style={{width: 20, 
+                            height: 20,
+                            marginRight: 10,
+                            justifyContent: 'center',
+                            marginTop: 15 
+                          }}
+                    source={{uri:'https://fthmb.tqn.com/MdXju0d78SWOuxJRhGepHMS2v_s=/1280x843/filters:no_upscale():fill(FFCC00,1)/about/GreenCircle-56a87e193df78cf7729e54d9.jpg'}}
+                  /> 
+              )}
+
+
               {renderIf(this.props.item.picture != '', 
                 <Image
                     style={{width: 50, 

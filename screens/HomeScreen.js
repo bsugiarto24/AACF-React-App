@@ -27,17 +27,6 @@ global.id = '';
 global.window = Dimensions.get('window');
 global.admins = [];
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDxe3Adw94y0kEaoyUckhJRPYV8kaHLQ8o",
-    authDomain: "aacf2-dc0b9.firebaseapp.com",
-    databaseURL: "https://aacf2-dc0b9.firebaseio.com",
-    storageBucket: "aacf2-dc0b9.appspot.com",
-    messagingSenderId: "874313332955"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-
 export default class HomeScreen extends React.Component {
 
   static route = {
@@ -59,7 +48,6 @@ export default class HomeScreen extends React.Component {
 
     // get admins 
     firebase.database().ref().child("admins").on('value', (snap) => {
-      global.admins = [];
       snap.forEach((child) => {
         global.admins.push("" + child.val());
       });

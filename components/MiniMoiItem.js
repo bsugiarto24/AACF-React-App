@@ -18,6 +18,8 @@ class MiniMoiItem extends Component {
 
   deletemini(){
 
+    alert(global.id);
+
     if(global.admins.includes(global.id)){
       global.moiRef.child(this.props.item.date).child(this.props.item.key).remove();
       global.moibynameRef.child(this.props.item.name).child(this.props.item._key).remove();
