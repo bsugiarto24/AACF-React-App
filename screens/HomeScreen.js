@@ -18,7 +18,7 @@ import { MonoText } from '../components/StyledText';
 import renderIf from './renderIf';
 //import PushNotification from 'react-native-push-notification';
 
-global.username = 'debug'; //anonymous
+global.username = 'anonymous';
 global.picture = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.empty = 'http://www.realestatetaxgroup.com/wp-content/uploads/2013/03/empty-profile.png';
 global.id = '';
